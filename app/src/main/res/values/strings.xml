@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MoviVersion4</string>
+    <string name="placeholder_movie">Zoolander</string>
+    <string name="placeholder_country">Croacia</string>
+</resources>
