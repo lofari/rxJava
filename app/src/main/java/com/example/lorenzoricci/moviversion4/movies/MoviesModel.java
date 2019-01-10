@@ -1,13 +1,15 @@
 package com.example.lorenzoricci.moviversion4.movies;
 
+import com.example.lorenzoricci.moviversion4.http.apimodel.Result;
+
 import io.reactivex.Observable;
 import io.reactivex.functions.BiFunction;
 
 public class MoviesModel implements MoviesMVP.Model {
 
-    private MoviesRepository repository;
+    private Repository repository;
 
-    public MoviesModel(MoviesRepository repository){
+    public MoviesModel(Repository repository){
         this.repository = repository;
     }
 
@@ -15,10 +17,10 @@ public class MoviesModel implements MoviesMVP.Model {
     public Observable<ViewModel> result() {
         return Observable.zip(repository.getResultData(), repository.getCountryData(), new BiFunction<Result, String, ViewModel>() {
             @Override
-            public ViewModel apply(Result result, String country) throws Exception {
+            public ViewModel apply(Result result, String country){
 
-                    //TODO cambiar result.toString cuando tenga el POJO de datos
-                    return new ViewModel(result.toString(), country);
+                return new ViewModel(result.getTitle(), country);
+
             }
         });
     }
