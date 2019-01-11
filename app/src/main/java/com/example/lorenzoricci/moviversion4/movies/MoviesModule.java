@@ -9,7 +9,7 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-public class MoviesModule {
+public class    MoviesModule {
 
     @Provides
     public MoviesMVP.Presenter provideMoviesPresenter(MoviesMVP.Model moviesModel){

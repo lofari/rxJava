@@ -18,9 +18,7 @@ public class MoviesModel implements MoviesMVP.Model {
         return Observable.zip(repository.getResultData(), repository.getCountryData(), new BiFunction<Result, String, ViewModel>() {
             @Override
             public ViewModel apply(Result result, String country){
-
                 return new ViewModel(result.getTitle(), country);
-
             }
         });
     }

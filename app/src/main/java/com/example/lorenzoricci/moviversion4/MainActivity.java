@@ -25,7 +25,7 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements MoviesMVP.View {
 
-    private static final String TAG = MainActivity.class.getName();
+    private final String TAG = MainActivity.class.getName();
 
     @BindView(R.id.activity_root_view)
     ViewGroup rootView;
@@ -45,11 +45,13 @@ public class MainActivity extends AppCompatActivity implements MoviesMVP.View {
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
+
         ((App) getApplication()).getComponent().inject(this);
 
         listAdapter = new ListAdapter(resultList);
         recyclerView.setAdapter(listAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL));
+
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -61,6 +63,11 @@ public class MainActivity extends AppCompatActivity implements MoviesMVP.View {
         super.onResume();
         presenter.setView(this);
         presenter.loadData();
+//        updateData(new ViewModel("Tu", "Vieja"));
+//        updateData(new ViewModel("Tu", "Vieja"));
+//        updateData(new ViewModel("Tu", "Vieja"));
+//        updateData(new ViewModel("Tu", "Vieja"));
+
     }
 
     @Override
@@ -73,9 +80,10 @@ public class MainActivity extends AppCompatActivity implements MoviesMVP.View {
 
     @Override
     public void updateData(ViewModel viewModel) {
+        Log.d(TAG,  "updateData: "+ viewModel.getTitle() + viewModel.getCountry());
         resultList.add(viewModel);
         listAdapter.notifyItemChanged(resultList.size()-1);
-        Log.d(TAG, "updateData: "+ viewModel.getTitle());
+
 
     }
 

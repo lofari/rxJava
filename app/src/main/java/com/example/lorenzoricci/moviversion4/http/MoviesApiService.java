@@ -9,7 +9,7 @@ import retrofit2.http.Query;
 
 public interface MoviesApiService {
 
-    @GET("top-rated")
+    @GET("top_rated")
     Observable<TopMoviesRated> getTopMoviesRated(@Query("page") Integer page);
 
 

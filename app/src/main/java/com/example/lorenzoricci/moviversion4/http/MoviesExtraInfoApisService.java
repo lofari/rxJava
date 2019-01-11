@@ -8,6 +8,7 @@ import retrofit2.http.Query;
 
 public interface MoviesExtraInfoApisService {
 
+    //TODO * O / no estoy seguro
     @GET("/")
     Observable<OmdbApi> getExtraInfoMovie(@Query("t") String title);
 

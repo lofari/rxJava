@@ -2,6 +2,7 @@ package com.example.lorenzoricci.moviversion4.movies;
 
 import com.example.lorenzoricci.moviversion4.http.MoviesApiService;
 import com.example.lorenzoricci.moviversion4.http.MoviesExtraInfoApisService;
+import com.example.lorenzoricci.moviversion4.http.apimodel.OmdbApi;
 import com.example.lorenzoricci.moviversion4.http.apimodel.Result;
 import com.example.lorenzoricci.moviversion4.http.apimodel.TopMoviesRated;
 
@@ -10,6 +11,7 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 
 public class MoviesRepository implements Repository {
@@ -39,12 +41,14 @@ public class MoviesRepository implements Repository {
 
     @Override
     public Observable<Result> getResultData() {
-        return null;
+
+        return getResultFromCache().switchIfEmpty(getResultFromNetwork());
+
     }
 
     @Override
     public Observable<String> getCountryData() {
-        return null;
+        return getCountryFromCache().switchIfEmpty(getCountryFromNetwork());
     }
 
     @Override
@@ -54,12 +58,18 @@ public class MoviesRepository implements Repository {
                 .concatWith(moviesApiService.getTopMoviesRated(2))
                 .concatWith(moviesApiService.getTopMoviesRated(3));
 
-        return topMoviesRatedObservable.concatMap(new Function<TopMoviesRated, Observable<Result>>() {
-            @Override
-            public Observable<Result> apply(TopMoviesRated topMoviesRated) {
-                return Observable.fromIterable(topMoviesRated.getResults());
-            }
-        })
+        return topMoviesRatedObservable
+                .concatMap(new Function<TopMoviesRated, Observable<Result>>() {
+                    @Override
+                    public Observable<Result> apply(TopMoviesRated topMoviesRated) {
+                        return Observable.fromIterable(topMoviesRated.getResults());
+                    }
+        }).doOnNext(new Consumer<Result>() {
+                    @Override
+                    public void accept(Result result) throws Exception {
+                        results.add(result);
+                    }
+                });
     }
 
     @Override
@@ -75,7 +85,26 @@ public class MoviesRepository implements Repository {
 
     @Override
     public Observable<String> getCountryFromNetwork() {
-        return null;
+        return getResultFromNetwork().concatMap(new Function<Result, Observable<OmdbApi>>() {
+            @Override
+            public Observable<OmdbApi> apply(Result result) {
+                return extraInfoApiService.getExtraInfoMovie(result.getTitle());
+            }
+        }).concatMap(new Function<OmdbApi, Observable<String>>() {
+            @Override
+            public Observable<String> apply(OmdbApi omdbApi) throws Exception {
+                if (omdbApi == null || omdbApi.getCountry() == null){
+                    return Observable.just("Unknown");
+                }else {
+                    return Observable.just(omdbApi.getCountry());
+                }
+            }
+        }).doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String country) {
+                countries.add(country);
+            }
+        });
     }
 
     @Override
